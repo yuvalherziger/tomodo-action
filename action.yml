@@ -1,0 +1,83 @@
+name: "tomodo MongoDB"
+description: "Start MongoDB instances in a GitHub action"
+inputs:
+  name:
+    description: "The deployment's name"
+    required: false
+    default: "tomodo-mongodb"
+  port:
+    description: "MongoDB port (in a cluster, this is the first incrementing port)"
+    required: false
+    default: 27017
+  image-repo:
+    description: "The MongoDB image name/repo (you probably don't want to change it)"
+    required: false
+    default: mongo
+  image-tag:
+    description: "The MongoDB image tag, which determines the MongoDB version to install"
+    required: false
+    default: latest
+  instance-type:
+    description: "The MongoDB instance type (standalone/replica-set/sharded/atlas)"
+    required: false
+    default: replica-set
+  replicas:
+    description: "The number of replica set nodes to provision"
+    required: false
+    default: 3
+  shards:
+    description: "The number of shards to provision in a sharded cluster"
+    required: false
+    default: 2
+  config-severs:
+    description: "The number of config server replica set nodes"
+    required: false
+    default: 1
+  mongos:
+    description: "The number of mongos routers"
+    required: false
+    default: 1
+  username:
+    description: "Optional authentication username"
+    required: false
+    default: null
+  password:
+    description: "Optional authentication password"
+    required: false
+    default: null
+  network_name:
+    description: |
+      The Docker network to provision the deployment in; will create a new one or use an existing one 
+      with the same name if such network exists
+    required: false
+    default: mongo-network
+outputs:
+  random-number:
+    description: "Random number"
+    value: ${{ steps.random-number-generator.outputs.random-number }}
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.10
+    - name: Install tomodo
+      run: pip install tomodo
+      shell: bash
+
+    - name: Random Number Generator
+      id: random-number-generator
+      run: echo "random-number=$(echo $RANDOM)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Set GitHub Path
+      run: echo "$GITHUB_ACTION_PATH" >> $GITHUB_PATH
+      shell: bash
+      env:
+        GITHUB_ACTION_PATH: ${{ github.action_path }}
+
+    - name: Run goodbye.sh
+      run: goodbye.sh
+      shell: bash
+
