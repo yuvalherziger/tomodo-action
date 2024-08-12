@@ -52,7 +52,7 @@ inputs:
     required: false
     default: mongo-network
 outputs:
-  random-number:
+  connection-string:
     description: "MongoDB connection string from Tomodo"
     value: ${{ steps.write-connection-string.outputs.connection-string }}
 runs:
