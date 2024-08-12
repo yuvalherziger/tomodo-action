@@ -99,4 +99,4 @@ runs:
         export CONNECTION_STRING="mongodb://${{ (inputs.username != '' && inputs.password != '') && format('{0}:{1}@', inputs.username, inputs.password) || '' }}${hostname}/"
     - name: Write Connection String
       shell: bash
-      run: echo "connection-string=$(echo $CONNECTION_STRING)" >> $GITHUB_OUTPUT
+      run: echo "connection-string=$CONNECTION_STRING" >> $GITHUB_OUTPUT
