@@ -54,7 +54,7 @@ inputs:
 outputs:
   connection-string:
     description: "MongoDB connection string from Tomodo"
-    value: ${{ steps.write-connection-string.outputs.connection-string }}
+    value: ${{ steps.connection-string.outputs.connection-string }}
 runs:
   using: "composite"
   steps:
@@ -98,6 +98,6 @@ runs:
         hostname=$(tomodo describe --name $name --output json | jq -r '.routers | map("\(.name):\(.port)") | join(",")')
         export CONNECTION_STRING="mongodb://${{ (inputs.username != '' && inputs.password != '') && format('{0}:{1}@', inputs.username, inputs.password) || '' }}${hostname}/"
     - name: Write Connection String
-      id: write-connection-string
+      id: connection-string
       shell: bash
       run: echo "connection-string=$CONNECTION_STRING" >> $GITHUB_OUTPUT
