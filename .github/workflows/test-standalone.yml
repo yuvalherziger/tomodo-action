@@ -1,10 +1,10 @@
-name: Replica Standalone
+name: Standalone
 
 on: [push, pull_request]
 
 jobs:
   standalone-deployment-mongosh:
-    name: tomodo provision standalone
+    name: Standalone (mongosh)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -29,7 +29,7 @@ jobs:
           mongosh "mongodb://localhost:27017" --eval 'db.adminCommand({ ping: 1})' --quiet
 
   standalone-deployment-python:
-    name: tomodo provision standalone
+    name: Standalone (Python)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -54,6 +54,38 @@ jobs:
           from sys import exit
           from pymongo import MongoClient
           client = MongoClient(connectTimeoutMS=5000)
+          res = client.admin.command("ping")
+          exit(1) if not int(res["ok"]) == 1 else exit(0)
+          EOF
+
+  standalone-port:
+    name: Standalone with non-standard port
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start MongoDB Server
+        uses: ./
+        with:
+          name: "Unit test"
+          port: 27000
+          instance-type: standalone
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: Install PyMongo
+        run: pip install pymongo
+
+      - name: Connect to tomodo instance
+        run: |
+          python - <<EOF
+          from sys import exit
+          from pymongo import MongoClient
+          client = MongoClient(connectTimeoutMS=5000, port=27000)
           res = client.admin.command("ping")
           exit(1) if not int(res["ok"]) == 1 else exit(0)
           EOF

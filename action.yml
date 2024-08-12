@@ -4,7 +4,7 @@ inputs:
   name:
     description: "The deployment's name"
     required: false
-    default: "tomodo-mongodb"
+    default: "tomodo-action"
   port:
     description: "MongoDB port (in a cluster, this is the first incrementing port)"
     required: false
@@ -20,7 +20,7 @@ inputs:
   instance-type:
     description: "The MongoDB instance type (standalone/replica-set/sharded/atlas)"
     required: false
-    default: replica-set
+    default: standalone
   replicas:
     description: "The number of replica set nodes to provision"
     required: false
@@ -40,11 +40,11 @@ inputs:
   username:
     description: "Optional authentication username"
     required: false
-    default: null
+    default: ""
   password:
     description: "Optional authentication password"
     required: false
-    default: null
+    default: ""
   network_name:
     description: |
       The Docker network to provision the deployment in; will create a new one or use an existing one 
@@ -66,5 +66,10 @@ runs:
       run: pip install tomodo
       shell: bash
     - name: Run deployment
-      run: tomodo provision standalone --ephemeral
+      run: |
+        tomodo provision {{ inputs.instance-type }} \
+        ${{ inputs.instance-type == 'atlas' && '' || '--ephemeral' }} \
+        --port ${{ inputs.port }} \
+        ${{ inputs.username == 'username' && inputs.password == 'username' && format('--username {0} --password {1}', inputs.username, inputs.password) || '' }} \
+
       shell: bash
