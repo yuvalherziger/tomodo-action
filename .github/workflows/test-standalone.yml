@@ -27,9 +27,3 @@ jobs:
       - name: Connect to tomodo instance
         run: |
           mongosh "mongodb://localhost:27017" --eval 'db.adminCommand({ ping: 1})' --quiet
-
-      - name: Run tests
-        run: npm test ./test/replica-set
-        env:
-          CI: true
-          MONGODB_REPLICA_SET: mongodb-test-rs
