@@ -45,7 +45,7 @@ inputs:
     description: "Optional authentication password"
     required: false
     default: ""
-  network_name:
+  network-name:
     description: |
       The Docker network to provision the deployment in; will create a new one or use an existing one 
       with the same name if such network exists
@@ -68,8 +68,11 @@ runs:
     - name: Run deployment
       run: |
         tomodo provision ${{ inputs.instance-type }} \
+        --name ${{ inputs.name }} \
         ${{ inputs.instance-type == 'atlas' && '' || '--ephemeral' }} \
         --port ${{ inputs.port }} \
+        --image-tag ${{ inputs.image-tag }} \
+        --network-name ${{ inputs.network-name }} \
         ${{ inputs.username == 'username' && inputs.password == 'username' && format('--username {0} --password {1}', inputs.username, inputs.password) || '' }}
 
       shell: bash
