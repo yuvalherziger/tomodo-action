@@ -1,0 +1,35 @@
+name: Replica Standalone
+
+on: [push, pull_request]
+
+jobs:
+  standalone-deployment:
+    name: tomodo provision standalone
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start MongoDB Server
+        uses: ./
+        with:
+          name: "Unit test"
+
+      - name: Install mongosh
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg
+          wget -qO - https://www.mongodb.org/static/pgp/server-7.0.asc | sudo apt-key add -
+          echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/7.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-7.0.list
+          sudo apt-get update
+          sudo apt-get install -y mongodb-mongosh
+
+      - name: Connect to tomodo instance
+        run: |
+          mongosh "mongodb://localhost:27017" --eval 'db.adminCommand({ ping: 1})' --quiet
+
+      - name: Run tests
+        run: npm test ./test/replica-set
+        env:
+          CI: true
+          MONGODB_REPLICA_SET: mongodb-test-rs
