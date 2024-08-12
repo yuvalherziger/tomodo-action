@@ -73,6 +73,6 @@ runs:
         --port ${{ inputs.port }} \
         --image-tag ${{ inputs.image-tag }} \
         --network-name ${{ inputs.network-name }} \
-        ${{ inputs.username == 'username' && inputs.password == 'username' && format('--username {0} --password {1}', inputs.username, inputs.password) || '' }}
+        ${{ (inputs.username != '' && inputs.password != '') && format('--username {0} --password {1}', inputs.username, inputs.password) || '' }}
 
       shell: bash
