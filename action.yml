@@ -53,7 +53,7 @@ inputs:
     default: mongo-network
 outputs:
   random-number:
-    description: "Random number"
+    description: "MongoDB connection string from Tomodo"
     value: ${{ steps.write-connection-string.outputs.connection-string }}
 runs:
   using: "composite"
@@ -98,5 +98,6 @@ runs:
         hostname=$(tomodo describe --name $name --output json | jq -r '.routers | map("\(.name):\(.port)") | join(",")')
         export CONNECTION_STRING="mongodb://${{ (inputs.username != '' && inputs.password != '') && format('{0}:{1}@', inputs.username, inputs.password) || '' }}${hostname}/"
     - name: Write Connection String
+      id: write-connection-string
       shell: bash
       run: echo "connection-string=$CONNECTION_STRING" >> $GITHUB_OUTPUT
