@@ -86,14 +86,16 @@ runs:
       shell: bash
       run: |
         tomodo describe --name ${{ inputs.name }} --output json | jq -r '.members[] | "\(.name)"' | while read name; do echo "127.0.0.1 $name" | sudo tee -a /etc/hosts; done
-        hostname=$(tomodo describe --name grand-minnow --output json | jq -r '.members | map("\(.name):\(.port)") | join(",")')
+        name=${{ inputs.name }}
+        hostname=$(tomodo describe --name $name --output json | jq -r '.members | map("\(.name):\(.port)") | join(",")')
         export CONNECTION_STRING="mongodb://${{ (inputs.username != '' && inputs.password != '') && format('{0}:{1}@', inputs.username, inputs.password) || '' }}${hostname}/"
     - name: Map sharded cluster mongos hosts
       if: ${{ inputs.instance-type == 'sharded'}}
       shell: bash
       run: |
         tomodo describe --name ${{ inputs.name }} --output json | jq -r '.routers[] | "\(.name)"' | while read name; do echo "127.0.0.1 $name" | sudo tee -a /etc/hosts; done
-        hostname=$(tomodo describe --name grand-minnow --output json | jq -r '.routers | map("\(.name):\(.port)") | join(",")')
+        name=${{ inputs.name }}
+        hostname=$(tomodo describe --name $name --output json | jq -r '.routers | map("\(.name):\(.port)") | join(",")')
         export CONNECTION_STRING="mongodb://${{ (inputs.username != '' && inputs.password != '') && format('{0}:{1}@', inputs.username, inputs.password) || '' }}${hostname}/"
     - name: Write Connection String
       shell: bash

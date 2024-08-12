@@ -1,4 +1,4 @@
-name: Standalone
+name: Replica Set
 
 on: [push, pull_request]
 
@@ -18,7 +18,7 @@ jobs:
           name: "test"
           instance-type: "replica-set"
 
-      - name: asdf
+      - name: Use connection string from tomodo output
         run: using
         shell: bash
         env:
