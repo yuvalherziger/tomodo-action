@@ -29,7 +29,7 @@ inputs:
     description: "The number of shards to provision in a sharded cluster"
     required: false
     default: "2"
-  config-severs:
+  config-servers:
     description: "The number of config server replica set nodes"
     required: false
     default: "1"
@@ -74,6 +74,9 @@ runs:
         --port ${{ inputs.port }} \
         --image-tag ${{ inputs.image-tag }} \
         --network-name ${{ inputs.network-name }} \
+        ${{ (inputs.instance-type == 'sharded' || inputs.instance-type == 'replica-set') && format('--replicas {0}', inputs.replicas) || '' }} \
+        ${{ inputs.instance-type == 'sharded' && format('--mongos {0}', inputs.mongos) || '' }} \
+        ${{ inputs.instance-type == 'sharded' && format('--config-servers {0}', inputs.config-servers) || '' }} \
         ${{ (inputs.username != '' && inputs.password != '') && format('--username {0} --password {1}', inputs.username, inputs.password) || '' }}
     - name: Map standalone/Atlas host
       if: ${{ inputs.instance-type == 'standalone' || inputs.instance-type == 'atlas' }}

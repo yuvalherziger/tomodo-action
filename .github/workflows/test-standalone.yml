@@ -26,7 +26,9 @@ jobs:
 
       - name: Connect to tomodo instance
         run: |
-          mongosh "mongodb://localhost:27017" --eval 'db.adminCommand({ ping: 1})' --quiet
+          mongosh "$CONNECTION_STRING" --eval 'db.adminCommand({ ping: 1})' --quiet
+        env:
+          CONNECTION_STRING: ${{ steps.tomodo.outputs.connection-string }}
 
   standalone-deployment-python:
     name: Standalone (Python)
@@ -51,12 +53,16 @@ jobs:
       - name: Connect to tomodo instance
         run: |
           python - <<EOF
+          import os
           from sys import exit
           from pymongo import MongoClient
-          client = MongoClient(connectTimeoutMS=5000)
+
+          client = MongoClient(os.environ.get('CONNECTION_STRING'))
           res = client.admin.command("ping")
-          exit(1) if not int(res["ok"]) == 1 else exit(0)
+          exit(1) if not int(res["ok"]) == 1 else print("ok")
           EOF
+        env:
+          CONNECTION_STRING: ${{ steps.tomodo.outputs.connection-string }}
 
   standalone-port:
     name: Standalone with non-standard port
@@ -83,12 +89,16 @@ jobs:
       - name: Connect to tomodo instance
         run: |
           python - <<EOF
+          import os
           from sys import exit
           from pymongo import MongoClient
-          client = MongoClient(connectTimeoutMS=5000, port=27000)
+
+          client = MongoClient(os.environ.get('CONNECTION_STRING'))
           res = client.admin.command("ping")
-          exit(1) if not int(res["ok"]) == 1 else exit(0)
+          exit(1) if not int(res["ok"]) == 1 else print("ok")
           EOF
+        env:
+          CONNECTION_STRING: ${{ steps.tomodo.outputs.connection-string }}
 
   standalone-with-authn:
     name: Standalone with authentication
@@ -116,12 +126,16 @@ jobs:
       - name: Connect to tomodo instance
         run: |
           python - <<EOF
+          import os
           from sys import exit
           from pymongo import MongoClient
-          client = MongoClient(connectTimeoutMS=5000, username="mongouser", password="thisisnotsafe")
+
+          client = MongoClient(os.environ.get('CONNECTION_STRING'))
           res = client.admin.command("ping")
-          exit(1) if not int(res["ok"]) == 1 else exit(0)
+          exit(1) if not int(res["ok"]) == 1 else print("ok")
           EOF
+        env:
+          CONNECTION_STRING: ${{ steps.tomodo.outputs.connection-string }}
 
   standalone-image-tag:
     name: Standalone with non-latest image tag
@@ -148,12 +162,16 @@ jobs:
       - name: Connect to tomodo instance
         run: |
           python - <<EOF
+          import os
           from sys import exit
           from pymongo import MongoClient
-          client = MongoClient(connectTimeoutMS=5000)
+
+          client = MongoClient(os.environ.get('CONNECTION_STRING'))
           res = client.admin.command("ping")
-          exit(1) if not int(res["ok"]) == 1 else exit(0)
+          exit(1) if not int(res["ok"]) == 1 else print("ok")
           EOF
+        env:
+          CONNECTION_STRING: ${{ steps.tomodo.outputs.connection-string }}
 
   standalone-network:
     name: Standalone with network name
@@ -180,9 +198,13 @@ jobs:
       - name: Connect to tomodo instance
         run: |
           python - <<EOF
+          import os
           from sys import exit
           from pymongo import MongoClient
-          client = MongoClient(connectTimeoutMS=5000)
+
+          client = MongoClient(os.environ.get('CONNECTION_STRING'))
           res = client.admin.command("ping")
-          exit(1) if not int(res["ok"]) == 1 else exit(0)
+          exit(1) if not int(res["ok"]) == 1 else print("ok")
           EOF
+        env:
+          CONNECTION_STRING: ${{ steps.tomodo.outputs.connection-string }}

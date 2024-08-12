@@ -1,11 +1,11 @@
-name: Replica Set
+name: Sharded Cluster
 
 on: [push, pull_request]
 
 jobs:
 
-  replica-set-python:
-    name: Replica-set
+  sharded-cluster-python:
+    name: sharded cluster
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -16,7 +16,7 @@ jobs:
         uses: ./
         with:
           name: "test"
-          instance-type: "replica-set"
+          instance-type: "sharded"
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
@@ -41,8 +41,8 @@ jobs:
         env:
           CONNECTION_STRING: ${{ steps.tomodo.outputs.connection-string }}
 
-  replica-set-five-replicas:
-    name: Replica-set (5 nodes)
+  sharded-cluster-four-mongos:
+    name: Sharded cluster (4 mongos)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -53,8 +53,8 @@ jobs:
         uses: ./
         with:
           name: "test"
-          instance-type: "replica-set"
-          replicas: "5"
+          instance-type: "sharded"
+          mongos: "4"
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
@@ -79,8 +79,8 @@ jobs:
         env:
           CONNECTION_STRING: ${{ steps.tomodo.outputs.connection-string }}
 
-  replica-set-authn:
-    name: Replica-set with Authentication
+  sharded-cluster-authn:
+    name: Sharded-cluster with Authentication
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -91,7 +91,7 @@ jobs:
         uses: ./
         with:
           name: "test"
-          instance-type: "replica-set"
+          instance-type: "sharded"
           username: "mongouser"
           password: "thisisnotsafe"
 
