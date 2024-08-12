@@ -8,7 +8,7 @@ inputs:
   port:
     description: "MongoDB port (in a cluster, this is the first incrementing port)"
     required: false
-    default: 27017
+    default: "27017"
   image-repo:
     description: "The MongoDB image name/repo (you probably don't want to change it)"
     required: false
@@ -24,19 +24,19 @@ inputs:
   replicas:
     description: "The number of replica set nodes to provision"
     required: false
-    default: 3
+    default: "3"
   shards:
     description: "The number of shards to provision in a sharded cluster"
     required: false
-    default: 2
+    default: "2"
   config-severs:
     description: "The number of config server replica set nodes"
     required: false
-    default: 1
+    default: "1"
   mongos:
     description: "The number of mongos routers"
     required: false
-    default: 1
+    default: "1"
   username:
     description: "Optional authentication username"
     required: false
@@ -54,7 +54,7 @@ inputs:
 outputs:
   random-number:
     description: "Random number"
-    value: ${{ steps.random-number-generator.outputs.random-number }}
+    value: ${{ steps.write-connection-string.outputs.connection-string }}
 runs:
   using: "composite"
   steps:
@@ -63,9 +63,10 @@ runs:
       with:
         python-version: 3.8
     - name: Install tomodo
-      run: pip install tomodo
       shell: bash
+      run: pip install tomodo
     - name: Run deployment
+      shell: bash
       run: |
         tomodo provision ${{ inputs.instance-type }} \
         --name ${{ inputs.name }} \
@@ -74,5 +75,26 @@ runs:
         --image-tag ${{ inputs.image-tag }} \
         --network-name ${{ inputs.network-name }} \
         ${{ (inputs.username != '' && inputs.password != '') && format('--username {0} --password {1}', inputs.username, inputs.password) || '' }}
-
+    - name: Map standalone/Atlas host
+      if: ${{ inputs.instance-type == 'standalone' || inputs.instance-type == 'atlas' }}
       shell: bash
+      run: |
+        echo "127.0.0.1 ${{ inputs.name }}" | sudo tee -a /etc/hosts
+        export CONNECTION_STRING="mongodb://${{ (inputs.username != '' && inputs.password != '') && format('{0}:{1}@', inputs.username, inputs.password) || '' }}${{ format('{0}:{1}/?directConnection=true', inputs.name, inputs.port) }}"
+    - name: Map replica set hosts
+      if: ${{ inputs.instance-type == 'replica-set' }}
+      shell: bash
+      run: |
+        tomodo describe --name ${{ inputs.name }} --output json | jq -r '.members[] | "\(.name)"' | while read name; do echo "127.0.0.1 $name" | sudo tee -a /etc/hosts; done
+        hostname=$(tomodo describe --name grand-minnow --output json | jq -r '.members | map("\(.name):\(.port)") | join(",")')
+        export CONNECTION_STRING="mongodb://${{ (inputs.username != '' && inputs.password != '') && format('{0}:{1}@', inputs.username, inputs.password) || '' }}${hostname}/"
+    - name: Map sharded cluster mongos hosts
+      if: ${{ inputs.instance-type == 'sharded'}}
+      shell: bash
+      run: |
+        tomodo describe --name ${{ inputs.name }} --output json | jq -r '.routers[] | "\(.name)"' | while read name; do echo "127.0.0.1 $name" | sudo tee -a /etc/hosts; done
+        hostname=$(tomodo describe --name grand-minnow --output json | jq -r '.routers | map("\(.name):\(.port)") | join(",")')
+        export CONNECTION_STRING="mongodb://${{ (inputs.username != '' && inputs.password != '') && format('{0}:{1}@', inputs.username, inputs.password) || '' }}${hostname}/"
+    - name: Write Connection String
+      shell: bash
+      run: echo "connection-string=$(echo $CONNECTION_STRING)" >> $GITHUB_OUTPUT
