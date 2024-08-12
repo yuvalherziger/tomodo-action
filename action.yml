@@ -106,4 +106,7 @@ runs:
     - name: Write Connection String
       id: connection-string
       shell: bash
-      run: echo "connection-string=${{ steps.single-host.outputs.connection_string != "" && steps.multi-host.outputs.connection_string || steps.single-host.outputs.connection_string}}" >> $GITHUB_OUTPUT
+      run: |
+        single_host=${{ steps.single-host.outputs.connection_string }}
+        multi_host=${{ steps.multi-host.outputs.connection_string }}
+        echo "connection-string=${single_host:-${multi_host:-localhost}}" >> $GITHUB_OUTPUT
