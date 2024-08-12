@@ -67,9 +67,9 @@ runs:
       shell: bash
     - name: Run deployment
       run: |
-        tomodo provision {{ inputs.instance-type }} \
+        tomodo provision ${{ inputs.instance-type }} \
         ${{ inputs.instance-type == 'atlas' && '' || '--ephemeral' }} \
         --port ${{ inputs.port }} \
-        ${{ inputs.username == 'username' && inputs.password == 'username' && format('--username {0} --password {1}', inputs.username, inputs.password) || '' }} \
+        ${{ inputs.username == 'username' && inputs.password == 'username' && format('--username {0} --password {1}', inputs.username, inputs.password) || '' }}
 
       shell: bash
