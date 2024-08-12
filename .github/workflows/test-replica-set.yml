@@ -18,12 +18,6 @@ jobs:
           name: "test"
           instance-type: "replica-set"
 
-      - name: Use connection string from tomodo output
-        run: using
-        shell: bash
-        env:
-          CONNECTION_STRING: ${{ steps.tomodo.outputs.connection-string }}
-
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
