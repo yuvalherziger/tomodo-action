@@ -25,10 +25,6 @@ inputs:
     description: "The number of replica set nodes to provision"
     required: false
     default: "3"
-  ephemeral:
-    description: "Whether the deployment should be ephemeral"
-    required: false
-    default: "true"
   shards:
     description: "The number of shards to provision in a sharded cluster"
     required: false
@@ -74,7 +70,6 @@ runs:
       run: |
         tomodo provision ${{ inputs.instance-type }} \
         --name ${{ inputs.name }} \
-        ${{ (inputs.instance-type == 'atlas' || inputs.ephemeral != 'true' ) && '' || '--ephemeral' }} \
         --port ${{ inputs.port }} \
         --image-tag ${{ inputs.image-tag }} \
         --network-name ${{ inputs.network-name }} \
