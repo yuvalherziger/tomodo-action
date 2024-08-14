@@ -20,7 +20,7 @@ inputs:
   instance-type:
     description: "The MongoDB instance type (standalone/replica-set/sharded/atlas)"
     required: false
-    default: standalone
+    default: atlas
   replicas:
     description: "The number of replica set nodes to provision"
     required: false
