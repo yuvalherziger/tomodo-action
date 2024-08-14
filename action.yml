@@ -77,14 +77,14 @@ runs:
         ${{ (inputs.instance-type == 'sharded' || inputs.instance-type == 'replica-set') && format('--replicas {0}', inputs.replicas) || '' }} \
         ${{ inputs.instance-type == 'sharded' && format('--mongos {0}', inputs.mongos) || '' }} \
         ${{ inputs.instance-type == 'sharded' && format('--config-servers {0}', inputs.config-servers) || '' }} \
-        ${{ (inputs.username != '' && inputs.password != '') && format('--username {0} --password {1}', inputs.username, inputs.password) || '' }}
+        ${{ (inputs.username != '' && inputs.password != '' && inputs.instance-type != 'sharded') && format('--username {0} --password {1}', inputs.username, inputs.password) || '' }}
     - name: Map standalone/Atlas host
       if: ${{ inputs.instance-type == 'standalone' || inputs.instance-type == 'atlas' }}
       id: single-host
       shell: bash
       run: |
         echo "127.0.0.1 ${{ inputs.name }}" | sudo tee -a /etc/hosts
-        export CONNECTION_STRING="mongodb://${{ (inputs.username != '' && inputs.password != '') && format('{0}:{1}@', inputs.username, inputs.password) || '' }}${{ format('{0}:{1}/?directConnection=true', inputs.name, inputs.port) }}"
+        export CONNECTION_STRING="mongodb://${{ (inputs.username != '' && inputs.password != '' && inputs.instance-type != 'sharded') && format('{0}:{1}@', inputs.username, inputs.password) || '' }}${{ format('{0}:{1}/?directConnection=true', inputs.name, inputs.port) }}"
         echo "connection_string=$CONNECTION_STRING" >> $GITHUB_OUTPUT
     - name: Map replica set hosts
       if: ${{ inputs.instance-type == 'replica-set' || inputs.instance-type == 'sharded' }}
@@ -95,17 +95,8 @@ runs:
         tomodo describe --name ${{ inputs.name }} --output json | jq -r ".$ATTR[] | \"\(.name)\"" | while read name; do echo "127.0.0.1 $name" | sudo tee -a /etc/hosts; done
         name=${{ inputs.name }}
         hostname=$(tomodo describe --name $name --output json | jq -r ".$ATTR | map(\"\(.name):\(.port)\") | join(\",\")")
-        export CONNECTION_STRING="mongodb://${{ (inputs.username != '' && inputs.password != '') && format('{0}:{1}@', inputs.username, inputs.password) || '' }}${hostname}/"
+        export CONNECTION_STRING="mongodb://${{ (inputs.username != '' && inputs.password != '' && inputs.instance-type != 'sharded') && format('{0}:{1}@', inputs.username, inputs.password) || '' }}${hostname}/"
         echo "connection_string=$CONNECTION_STRING" >> $GITHUB_OUTPUT
-#    - name: Map sharded cluster mongos hosts
-#      if: ${{ inputs.instance-type == 'sharded'}}
-#      shell: bash
-#      run: |
-#        tomodo describe --name ${{ inputs.name }} --output json | jq -r '.routers[] | "\(.name)"' | while read name; do echo "127.0.0.1 $name" | sudo tee -a /etc/hosts; done
-#        name=${{ inputs.name }}
-#        hostname=$(tomodo describe --name $name --output json | jq -r '.routers | map("\(.name):\(.port)") | join(",")')
-#        export CONNECTION_STRING="mongodb://${{ (inputs.username != '' && inputs.password != '') && format('{0}:{1}@', inputs.username, inputs.password) || '' }}${hostname}/"
-#        echo "connection_string=$CONNECTION_STRING" >> $GITHUB_OUTPUT
     - name: Write Connection String
       id: connection-string
       shell: bash
