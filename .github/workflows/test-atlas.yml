@@ -1,4 +1,4 @@
-name: Sharded Cluster
+name: Atlas Deployment
 
 on: [push, pull_request]
 
