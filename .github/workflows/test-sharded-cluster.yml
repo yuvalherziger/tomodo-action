@@ -79,8 +79,8 @@ jobs:
         env:
           CONNECTION_STRING: ${{ steps.tomodo.outputs.connection-string }}
 
-  sharded-cluster-authn:
-    name: Sharded-cluster with Authentication
+  sharded-cluster-one-shard:
+    name: Sharded cluster (4 mongos)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -92,8 +92,7 @@ jobs:
         with:
           name: "test"
           instance-type: "sharded"
-          username: "mongouser"
-          password: "thisisnotsafe"
+          shards: "1"
 
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
@@ -110,7 +109,7 @@ jobs:
           import os
           from sys import exit
           from pymongo import MongoClient
-          
+
           client = MongoClient(os.environ.get('CONNECTION_STRING'))
           res = client.admin.command("ping")
           exit(1) if not int(res["ok"]) == 1 else print("ok")

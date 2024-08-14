@@ -11,6 +11,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Start MongoDB Server
+        id: tomodo
         uses: ./
         with:
           name: "test"
@@ -38,6 +39,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Start MongoDB Server
+        id: tomodo
         uses: ./
         with:
           name: "test"
@@ -72,6 +74,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Start MongoDB Server
+        id: tomodo
         uses: ./
         with:
           name: "test"
@@ -109,6 +112,7 @@ jobs:
 
       - name: Start MongoDB Server
         uses: ./
+        id: tomodo
         with:
           name: "test"
           username: "mongouser"
@@ -146,6 +150,7 @@ jobs:
 
       - name: Start MongoDB Server
         uses: ./
+        id: tomodo
         with:
           name: "test"
           image-tag: "6.0"
@@ -182,6 +187,7 @@ jobs:
 
       - name: Start MongoDB Server
         uses: ./
+        id: tomodo
         with:
           name: "test"
           network-name: "some-non-default-network"

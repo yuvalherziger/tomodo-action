@@ -84,7 +84,7 @@ runs:
       shell: bash
       run: |
         echo "127.0.0.1 ${{ inputs.name }}" | sudo tee -a /etc/hosts
-        export CONNECTION_STRING="mongodb://${{ (inputs.username != '' && inputs.password != '' && inputs.instance-type != 'sharded') && format('{0}:{1}@', inputs.username, inputs.password) || '' }}${{ format('{0}:{1}/?directConnection=true', inputs.name, inputs.port) }}"
+        export CONNECTION_STRING="mongodb://${{ (inputs.username != '' && inputs.password != '') && format('{0}:{1}@', inputs.username, inputs.password) || '' }}${{ format('{0}:{1}/?directConnection=true', inputs.name, inputs.port) }}"
         echo "connection_string=$CONNECTION_STRING" >> $GITHUB_OUTPUT
     - name: Map replica set hosts
       if: ${{ inputs.instance-type == 'replica-set' || inputs.instance-type == 'sharded' }}
