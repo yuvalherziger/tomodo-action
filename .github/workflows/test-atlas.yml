@@ -1,0 +1,42 @@
+name: Sharded Cluster
+
+on: [push, pull_request]
+
+jobs:
+
+  atlas-deployment:
+    name: Atlas deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Start MongoDB Server
+        id: tomodo
+        uses: ./
+        with:
+          name: "test"
+          instance-type: "atlas"
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: Install PyMongo
+        run: pip install pymongo
+
+      - name: Connect to tomodo instance
+        shell: bash
+        run: |
+          python - <<EOF
+          import os
+          from sys import exit
+          from pymongo import MongoClient
+          
+          client = MongoClient(os.environ.get('CONNECTION_STRING'))
+          res = client.admin.command("ping")
+          exit(1) if not int(res["ok"]) == 1 else print("ok")
+          EOF
+        env:
+          CONNECTION_STRING: ${{ steps.tomodo.outputs.connection-string }}
