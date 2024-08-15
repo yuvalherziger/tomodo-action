@@ -5,7 +5,7 @@
 # tomodo-github-action
 
 This repo is home to the [tomodo](https://tomodo.dev) GitHub action.  Use is to run a MongoDB
-instance in your GitHub actions for automated tests.  `tomodo` supports loca lAtlas deployments, standalone instance,
+instance in your GitHub actions for automated tests.  `tomodo` supports local Atlas deployments, standalone instances,
 replica sets, and sharded clusters.
 
 ## Usage
@@ -14,19 +14,16 @@ Below is a sample GitHub action that uses
 
 ```yaml
 name: Run unit test
-
 on: [push]
-
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
     - name: Git checkout
       uses: actions/checkout@v4
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: yuvalherziger/setup-node@v4
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
       with:
         node-version: "20"
 
@@ -35,13 +32,12 @@ jobs:
       uses: yuvalherziger/tomodo-github-action@v1
       with:
         type: "atlas"
-        username: "unittests"
-        password: "somepassword"
 
     - run: npm install
-    
+
     # Use the tomodo step's output to grab the connection string - and you're done!
-    - run: npm test
+    - name: Run tests
+      run: npm test
       env:
         MONGODB_URI: ${{ steps.tomodo.outputs.connection-string }}
 ```
