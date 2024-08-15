@@ -1,7 +1,7 @@
 name: "tomodo MongoDB"
 description: "Start MongoDB instances in a GitHub action"
 branding:
-  icon: activity
+  icon: database
   color: gray-dark
 inputs:
   name:
