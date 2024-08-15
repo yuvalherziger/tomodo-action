@@ -12,10 +12,6 @@ inputs:
     description: "MongoDB port (in a cluster, this is the first incrementing port)"
     required: false
     default: "27017"
-  image-repo:
-    description: "The MongoDB image name/repo (you probably don't want to change it)"
-    required: false
-    default: mongo
   image-tag:
     description: "The MongoDB image tag, which determines the MongoDB version to install"
     required: false

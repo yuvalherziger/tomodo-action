@@ -65,7 +65,6 @@ jobs:
         username: "user"       # Omit to skip authentication (default: "")
         password: "pass"       # Omit to skip authentication (default: "")
         port: "27017"          # Change to a non-default port (default: "27017")
-        image-repo: "mongo"    # default: "mongo" for non-atlas deployments, "mongodb/mongodb-atlas-local" for Atlas
         image-tag: "7.0"       # Change for a specific MongoDB version (default: "latest")
         replicas: "3"          # Number of nodes in a replica-set/shard (default: "3")
         shards: "2"            # Number of shards in a sharded cluster (default: "2")
