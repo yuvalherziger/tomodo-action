@@ -31,7 +31,7 @@ jobs:
       id: tomodo
       uses: yuvalherziger/tomodo-github-action@v1
       with:
-        type: "atlas"
+        instance-type: "atlas"
 
     - run: npm install
 
