@@ -72,3 +72,21 @@ jobs:
         mongos: "1"            # Number of mongos routers in a sharded cluster (default: "1")
         network-name: "my-net" # Name for the instance's docker network (default: "mongo-network")
 ```
+
+## Input Parameters
+
+The action accepts the following parameters:
+
+| Name             | Description                                                      | Type                                                    | Default         |
+|------------------|------------------------------------------------------------------|---------------------------------------------------------|-----------------|
+| `name`           | The deployment's name                                            | String                                                  | auto-generated  |
+| `instance-type`  | The MongoDB instance type                                        | One of: `atlas`, `standalone`, `replica-set`, `sharded` | `atlas`         |
+| `username`       | Optional authentication username                                 | String                                                  | -               |
+| `password`       | Optional authentication password                                 | String                                                  | -               |
+| `port`           | MongoDB port (in a cluster, this is the first incrementing port) | Integer; Min: `0`, Max: `65535`                         | `27017`         |
+| `image-tag`      | The MongoDB image tag (determines the MongoDB version)           | String                                                  | `latest`        |
+| `replicas`       | The number of replica set nodes to provision                     | One of: `1`, `3`, `5` ,`7`                              | `3`             |
+| `shards`         | The number of shards to provision (sharded cluster)              | Integer (positive)                                      | `2`             |
+| `config-servers` | The number of config server replica set nodes (sharded cluster)  | One of: `1`, `3`, `5` ,`7`                              | `1`             |
+| `mongos`         | The number of mongos routers (sharded cluster)                   | Integer (positive)                                      | `1`             |
+| `network-name`   | The Docker network to provision the deployment in                | string                                                  | `mongo-network` |
